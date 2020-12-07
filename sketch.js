@@ -6,14 +6,13 @@ var database;
 var name,nameButton,nameBox;
 var addFood,feed, fedTime, lastFed;
 var foodObj;
-var foodlimit = 35;
-
 
 function preload()
 {
   //preloading images
   dogImg=loadImage("images/dogImg.png");
   happyDogImg=loadImage("images/dogImg1.png");
+  milkImg=loadImage("images/milk.png");
 }
 
 function setup() {
@@ -25,9 +24,9 @@ function setup() {
   foodObj=new Food();
 
   //dog sprite
-  dog=createSprite(250,250);
+  dog=createSprite(250,320);
   dog.addImage("normal",dogImg);
-  dog.scale=0.15;
+  dog.scale=0.2;
 
   foodStock=database.ref('Food');
   foodStock.on("value",readStock);
@@ -72,7 +71,7 @@ function draw() {
   fill(255);
   textFont('Georgia');
   textAlign(CENTER,CENTER);
-  text(name, 245, 400);
+  text(name, 245, 410);
 
   fedTime=database.ref('FeedTime');
   fedTime.on("value",function (data){
@@ -92,13 +91,16 @@ function draw() {
 }
 
 function feedDog(){
+  milk=createSprite(180,370);
+  milk.addImage(milkImg);
+  milk.scale=0.30;
+  dog.addImage(happyDogImg);
+
   foodObj.updateFoodStock(foodObj.getFoodStock()-1);
   database.ref('/').update({
     Food: foodObj.getFoodStock(),
     FeedTime: hour()
   })  
-  dog.addImage("happy",happyDogImg);
-
 }
 
 function addFoods(){
@@ -111,6 +113,7 @@ function addFoods(){
 
 function readStock(data){
   foodS=data.val();
+  foodObj.updateFoodStock(foodS);
 }
 
 function writeStock(x){
